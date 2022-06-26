@@ -1,4 +1,4 @@
-chalice==1.27.1
+-r requirements.txt
 pytest==7.1.2
 selenium==4.3.0
 
