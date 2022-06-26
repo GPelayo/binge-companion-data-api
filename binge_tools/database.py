@@ -1,7 +1,7 @@
 from typing import List
 import logging
 
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, text
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 from config import RDB_USER, RDB_PASSWORD, RDB_HOST, RDB_DATABASE_NAME
@@ -84,6 +84,10 @@ class DatabaseConnection:
         engine = create_engine(f"postgresql://{RDB_USER}:{RDB_PASSWORD}@{RDB_HOST}:5432/{RDB_DATABASE_NAME}")
         self.session_maker = sessionmaker(bind=engine)
         self.session = self.session_maker()
+
+    def has_series(self, series_id):
+        series = self.session.execute(text(f"SELECT 1 FROM series WHERE '{series_id}' = series.series_id"))
+        return series is None
 
     def write_series(self, series: Series):
         # TODO add proper update checks

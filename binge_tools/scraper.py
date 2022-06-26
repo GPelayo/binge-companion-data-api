@@ -1,7 +1,7 @@
 import hashlib
 import logging
 import re
-from typing import List
+from typing import List, Tuple
 from urllib.parse import urlencode, urlparse, urlunparse
 
 from selenium.webdriver.remote.webdriver import WebDriver
@@ -33,7 +33,7 @@ class IMDBSeleniumScraper:
     def open_browser(self, browser: WebDriver = None):
         self.browser = browser or ChromeWebDriverFactory().get_webdriver()
 
-    def search_media(self, title: str) -> Series:
+    def search_media(self, title: str) -> Tuple[Series, str]:
         log.info(f'Searching for {title} in IMDB...')
         url_pieces = list(urlparse('http://www.imdb.com/find'))
         url_pieces[4] = urlencode({'q': title})
@@ -49,17 +49,13 @@ class IMDBSeleniumScraper:
         show_url = show_result_element.get_attribute('href')
         series_id = re.findall(r'(?<=title/)tt.+(?=/\?ref)', show_url)[0]
 
-        # TODO move check at execution script
-        # if Supe_Series.objects.filter(pk=series_id).exists():
-        #     raise SeriesExistsException()
-
         series = Series(series_id, show_result_element.text)
         if 'title/tt' in show_url:
             thumb_links = show_result_element.find_elements(By.XPATH, '../..//td[@class="primary_photo"]/a/img')
             series.thumbnail_url = thumb_links[0].get_attribute('src') if thumb_links else None
 
         log.info(f'Found {series.name}. Scraping series...')
-        return self.scrape_series_page(series, show_url)
+        return series, show_url
 
     def scrape_series_page(self, series, show_url):
         season_link = f'http://www.imdb.com/title/{series.series_id}/episodes'
