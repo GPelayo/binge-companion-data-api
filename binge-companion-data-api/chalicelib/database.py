@@ -1,9 +1,7 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from chalicelib.config import RDB_USER, RDB_PASSWORD, RDB_HOST, RDB_DATABASE_NAME
+from sqlalchemy import Column, create_engine, Integer, String, text
+from sqlalchemy.orm import declarative_base, sessionmaker
 
-from sqlalchemy import Column, Integer, String, text
-from sqlalchemy.orm import declarative_base
+from chalicelib.config import RDB_USER, RDB_PASSWORD, RDB_HOST, RDB_DATABASE_NAME
 
 Base = declarative_base()
 

@@ -9,7 +9,7 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 
 from exceptions import NoResultsException
-from models import Series, Episode, Trivia
+from models import Episode, Series, Trivia
 from webdriver import ChromeWebDriverFactory
 
 

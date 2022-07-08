@@ -1,6 +1,5 @@
-from chalice import Chalice
-from database import DatabaseConnection
-from chalice import BadRequestError
+from chalice import BadRequestError, Chalice
+from chalicelib.database import DatabaseConnection
 
 app = Chalice(app_name='binge-companion-api')
 
