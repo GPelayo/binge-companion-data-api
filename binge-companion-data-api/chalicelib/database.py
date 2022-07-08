@@ -1,7 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-
-from config import RDB_USER, RDB_PASSWORD, RDB_HOST, RDB_DATABASE_NAME
+from chalicelib.config import RDB_USER, RDB_PASSWORD, RDB_HOST, RDB_DATABASE_NAME
 
 from sqlalchemy import Column, Integer, String, text
 from sqlalchemy.orm import declarative_base
@@ -25,9 +24,17 @@ class DatabaseConnection:
     def __init__(self):
         engine = create_engine(f"postgresql://{RDB_USER}:{RDB_PASSWORD}@{RDB_HOST}:5432/{RDB_DATABASE_NAME}")
         self.session_maker = sessionmaker(bind=engine)
+        self.session = None
+        print('Connecting to Database')
+        engine.connect()
+
+    def connect(self):
         self.session = self.session_maker()
 
     def list_series(self):
+        print('Listing Eps')
+        print(self.session.bind)
+
         return {
             'series': [
                 {
@@ -57,8 +64,20 @@ class DatabaseConnection:
             ]
         }
 
+    def get_episode(self, episode_id):
+        name, series_id, season = self.session.execute(text(f"SELECT name, series_id, season FROM episode"
+                                                                f" WHERE episode.episode_id = '{episode_id}'")).one()
+
+        return {
+            'episode_id': episode_id,
+            'name': name,
+            'series_id': series_id,
+            'season': season
+        }
+
     def get_trivia_from_episode(self, episode_id):
         trivia = self.session.execute(text(f"SELECT text FROM trivia WHERE trivia.episode_id = '{episode_id}'")).all()
+
         return {
             "trivia": [i[0] for i in trivia]
         }
