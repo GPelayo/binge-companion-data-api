@@ -6,13 +6,13 @@ app = Chalice(app_name='binge-companion-api')
 
 
 @app.route('/v1/series')
-def series():
+def series_view():
     with DatabaseConnection() as db:
         return db.list_series()
 
 
 @app.route('/v1/episode')
-def episodes():
+def episodes_view():
     series_id = app.current_request.query_params.get('series-id')
     season = app.current_request.query_params.get('season')
 
@@ -24,7 +24,7 @@ def episodes():
 
 
 @app.route('/v1/trivia')
-def trivia():
+def trivia_view():
     episode_id = app.current_request.query_params.get('episode-id')
 
     if episode_id:
