@@ -1,21 +1,8 @@
-from sqlalchemy import Column, create_engine, Integer, String, text
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy import create_engine, text
+from sqlalchemy.orm import sessionmaker
+from binge_models.models import Series
 
 from chalicelib.config import RDB_USER, RDB_PASSWORD, RDB_HOST, RDB_DATABASE_NAME
-
-Base = declarative_base()
-
-
-class Series(Base):
-    __tablename__ = "series"
-
-    series_id = Column(Integer, primary_key=True)
-    name = Column(String)
-    season_count = Column(Integer)
-    thumbnail_url = Column(String)
-
-    def __str__(self):
-        return self.name
 
 
 class DatabaseConnection:
