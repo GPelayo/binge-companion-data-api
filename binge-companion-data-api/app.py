@@ -15,9 +15,9 @@ def episodes_view():
     series_id = app.current_request.query_params.get('series-id')
     season = app.current_request.query_params.get('season')
 
-    if season and series_id:
+    if series_id:
         with DatabaseConnection() as db:
-            return db.get_episodes_from_season(series_id, season=season)
+            return db.get_episodes_from_series(series_id, season=season)
     else:
         raise BadRequestError
 

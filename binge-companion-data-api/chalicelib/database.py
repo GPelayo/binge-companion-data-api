@@ -35,10 +35,13 @@ class DatabaseConnection:
 
         return {k: str(v) for k, v in series.__dict__.items() if k[0] != '_'}
 
-    def get_episodes_from_season(self, series_id, season):
-        episodes = self.session.execute(text("SELECT episode_id, name FROM episode"
-                                             f" WHERE episode.series_id = '{series_id}'"
-                                             f" AND episode.season = '{season}'")).all()
+    def get_episodes_from_series(self, series_id, season=None):
+        query = f"SELECT episode_id, name FROM episode WHERE episode.series_id = '{series_id}'"
+
+        if season:
+            query += f" AND episode.season = '{season}'"
+
+        episodes = self.session.execute(text(query)).all()
 
         return {
             "episodes": [
