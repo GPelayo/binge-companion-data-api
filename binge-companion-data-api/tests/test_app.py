@@ -1,5 +1,6 @@
 import json
 import sys
+import pathlib
 
 from binge_models.models import Series, Episode, Trivia, TriviaTag
 from chalice.test import Client
@@ -11,36 +12,169 @@ from app import app
 from chalicelib import config
 
 dotenv.load_dotenv()
-this_module = sys.modules[__name__]
 
 
 class ExpectedOutputs:
     def __init__(self):
-        with open('dummy_data.json', 'r') as tf:
-            test_series = json.load(tf)
+        test_series = {
+            "series": [
+                {
+                    "series_id": "BS",
+                    "name": "The Big Betrayal",
+                    "season_count": 2,
+                    "thumbnail_url": "http://127.0.0.1:8000",
+                    "series_wide_trivia": [
+                        {
+                            "trivia_id": "big-betrayal",
+                            "score": 10,
+                            "score_denominator": 10,
+                            "text": "Big Setup is big."
+                        },
+                        {
+                            "trivia_id": "big-money",
+                            "score": 7,
+                            "score_denominator": 10,
+                            "text": "Bad guys get big money"
+                        }
+                    ],
+                    "episodes": [
+                        {
+                            "episode_id": "BB1.1",
+                            "name": "Pilot",
+                            "season": 1,
+                            "trivia": [
+                                {
+                                    "trivia_id": "IMAX",
+                                    "score": 1,
+                                    "score_denominator": 121,
+                                    "text": "First episode was filmed using IMAX cameras. Changes"
+                                },
+                                {
+                                    "trivia_id": "IRL-Big-Betrayal",
+                                    "score": 80,
+                                    "score_denominator": 121,
+                                    "text": "Series cancelled after executive producer ran off with the funding."
+                                }
+                            ]
+                        },
+                        {
+                            "episode_id": "BB2.1",
+                            "name": "Pilot 2",
+                            "season": 2,
+                            "trivia": [
+                                {
+                                    "trivia_id": "Big-Reveal ",
+                                    "score": 80,
+                                    "score_denominator": 121,
+                                    "text": "Series planning to be revived."
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "series_id": "1110",
+                    "name": "Man staring at wall.",
+                    "season_count": 2,
+                    "series_wide_trivia": [
+                        {
+                            "trivia_id": "acab",
+                            "score": 10,
+                            "score_denominator": 10,
+                            "text": "Original concept was 'Man watching paint dry'"
+                        },
+                        {
+                            "trivia_id": "1232",
+                            "score": 7,
+                            "score_denominator": 10,
+                            "text": "Season 2 casted a moth. But was cut due to budget reasons."
+                        }
+                    ],
+                    "episodes": [
+                        {
+                            "episode_id": "1.1",
+                            "name": "Pilot",
+                            "season": 1,
+                            "trivia": [
+                                {
+                                    "trivia_id": "3",
+                                    "score": 1,
+                                    "score_denominator": 121,
+                                    "text": "Walls suck."
+                                },
+                                {
+                                    "trivia_id": "5",
+                                    "score": 80,
+                                    "score_denominator": 121,
+                                    "text": "Took 5 hours to remove graffiti for filming."
+                                }
+                            ]
+                        },
+                        {
+                            "episode_id": "1.2",
+                            "name": "Shed Wall",
+                            "season": 1,
+                            "trivia": [
+                                {
+                                    "trivia_id": "32",
+                                    "score": 5,
+                                    "score_denominator": 521,
+                                    "text": "Walls still suck."
+                                },
+                                {
+                                    "trivia_id": "15",
+                                    "score": 89,
+                                    "score_denominator": 151,
+                                    "text": "Had to cancel rest of the season due to budget restraints."
+                                },
+                                {
+                                    "trivia_id": "89",
+                                    "score": 80,
+                                    "score_denominator": 121,
+                                    "text": "Actor playing 'Man' was request double on his contract. Was planned to be re-casted before the season was canceled."
+                                }
+                            ]
+                        },
+                        {
+                            "episode_id": "2.1",
+                            "name": "Pilot",
+                            "season": 2,
+                            "trivia": [
+                                {
+                                    "trivia_id": "1232",
+                                    "score": 7,
+                                    "score_denominator": 10,
+                                    "text": "Season 2 casted a moth. But was cut due to budget reasons."
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
 
-            self.series_endpoint = {
-                'series': [{
-                    'id': series['series_id'],
-                    'name': series['name'],
-                    'season_count': series['season_count']
-                } for series in test_series['series']]
-            }
+        self.series_endpoint = {
+            'series': [{
+                'id': series['series_id'],
+                'name': series['name'],
+                'season_count': series['season_count']
+            } for series in test_series['series']]
+        }
 
-            for series in test_series['series']:
-                if series['series_id'] == '1110':
-                    test_season_1_episodes = series['episodes']
-                    self.season_1_episodes = {
-                        'episodes': [{
-                            'episode_id': test_episode['episode_id'],
-                            'name': test_episode['name']
-                        } for test_episode in test_season_1_episodes if test_episode['season'] == 1]
-                    }
-                    for ep in series['episodes']:
-                        if ep['episode_id'] == '2.1':
-                            self.episode_2_1_trivia = {'trivia': [trivia['text'] for trivia in ep['trivia']]}
-                            break
-                    break
+        for series in test_series['series']:
+            if series['series_id'] == '1110':
+                test_season_1_episodes = series['episodes']
+                self.season_1_episodes = {
+                    'episodes': [{
+                        'episode_id': test_episode['episode_id'],
+                        'name': test_episode['name']
+                    } for test_episode in test_season_1_episodes if test_episode['season'] == 1]
+                }
+                for ep in series['episodes']:
+                    if ep['episode_id'] == '2.1':
+                        self.episode_2_1_trivia = {'trivia': [trivia['text'] for trivia in ep['trivia']]}
+                        break
+                break
 
 
 class TestDatabase:
