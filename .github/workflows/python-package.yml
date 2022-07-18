@@ -39,12 +39,18 @@ jobs:
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-      - name: Start Tests
+      - name: Start Tests with coverage
         env:
           RDB_USER: postgres
           RDB_PASSWORD: postgres
           RDB_HOST: localhost
           RDB_DATABASE_NAME: postgres
         run: |
-          pytest
+          coverage run -m pytest
+          coverage lcov
         working-directory: binge-companion-data-api/
+      - name: Publish coverage to coveralls.io
+        uses: coverallsapp/github-action@v1.1.2
+        with:
+          github-token: ${{ github.token }}
+          path-to-lcov: binge-companion-data-api/coverage.lcov
