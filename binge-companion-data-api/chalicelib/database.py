@@ -5,7 +5,7 @@ from binge_models.models import Series
 from chalicelib.config import RDB_USER, RDB_PASSWORD, RDB_HOST, RDB_DATABASE_NAME
 
 
-class DatabaseConnection:
+class BingeDatabase:
     def __init__(self):
         engine = create_engine(f"postgresql://{RDB_USER}:{RDB_PASSWORD}@{RDB_HOST}:5432/{RDB_DATABASE_NAME}")
         self.session_maker = sessionmaker(bind=engine)
@@ -35,7 +35,7 @@ class DatabaseConnection:
 
         return {k: str(v) for k, v in series.__dict__.items() if k[0] != '_'}
 
-    def get_episodes_from_series(self, series_id, season=None):
+    def list_episode_names(self, series_id, season=None):
         query = f"SELECT episode_id, name FROM episode WHERE episode.series_id = '{series_id}'"
 
         if season:
@@ -63,7 +63,7 @@ class DatabaseConnection:
             'season': season
         }
 
-    def get_trivia_from_episode(self, episode_id):
+    def list_trivia_text_from_episode(self, episode_id):
         trivia = self.session.execute(text(f"SELECT text FROM trivia WHERE trivia.episode_id = '{episode_id}'")).all()
 
         return {
