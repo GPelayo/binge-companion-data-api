@@ -5,7 +5,7 @@ app = Chalice(app_name='binge-companion-api')
 
 
 @app.route('/v1/series')
-def series_view():
+def list_series():
     with BingeDatabase() as db:
         return db.list_series()
 
@@ -17,15 +17,18 @@ def get_series(series_id):
 
 
 @app.route('/v1/episode')
-def episodes_view():
-    series_id = app.current_request.query_params.get('series-id')
-    season = app.current_request.query_params.get('season')
+def list_episodes():
+    if not (params := app.current_request.query_params):
+        raise BadRequestError('No series-id given.')
+
+    series_id = params.get('series-id')
+    season = params.get('season')
 
     if series_id:
         with BingeDatabase() as db:
             return db.list_episode(series_id, season=season)
     else:
-        raise BadRequestError
+        raise BadRequestError('No series-id given.')
 
 
 @app.route('/v1/episode/{episode_id}')
@@ -36,7 +39,7 @@ def get_episode(episode_id):
 
 
 @app.route('/v1/trivia')
-def trivia_view():
+def list_trivia():
     episode_id = app.current_request.query_params.get('episode-id')
 
     if episode_id:

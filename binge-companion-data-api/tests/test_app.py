@@ -315,6 +315,20 @@ def test_episode_view(setup_database, season_1_episodes_result):
         assert response.json_body == season_1_episodes_result
 
 
+def test_list_episode_noseriesid(setup_database):
+    with Client(app) as client:
+        response = client.http.get('/v1/episode?season=1')
+        assert response.status_code == 400
+        assert response.json_body['Message'] == 'No series-id given.'
+
+
+def test_list_episode_noparams(setup_database):
+    with Client(app) as client:
+        response = client.http.get('/v1/episode')
+        assert response.status_code == 400
+        assert response.json_body['Message'] == 'No series-id given.'
+
+
 def test_get_episode(setup_database, get_episode_result):
     with Client(app) as client:
         response = client.http.get('/v1/episode/BB1.1')
@@ -325,3 +339,4 @@ def test_trivia_view(setup_database, episode_2_1_trivia_result):
     with Client(app) as client:
         response = client.http.get('/v1/trivia?episode-id=1.2')
         assert response.json_body == episode_2_1_trivia_result
+
