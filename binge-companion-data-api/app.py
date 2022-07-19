@@ -10,6 +10,12 @@ def series_view():
         return db.list_series()
 
 
+@app.route('/v1/series/{series_id}')
+def get_series(series_id):
+    with BingeDatabase() as db:
+        return db.get_series(series_id)
+
+
 @app.route('/v1/episode')
 def episodes_view():
     series_id = app.current_request.query_params.get('series-id')
@@ -20,6 +26,13 @@ def episodes_view():
             return db.list_episode(series_id, season=season)
     else:
         raise BadRequestError
+
+
+@app.route('/v1/episode/{episode_id}')
+def get_episode(episode_id):
+
+    with BingeDatabase() as db:
+        return db.get_episode(episode_id)
 
 
 @app.route('/v1/trivia')

@@ -167,6 +167,16 @@ def series_endpoint_result():
 
 
 @pytest.fixture()
+def get_series_result():
+    return {
+        "name": "The Big Betrayal",
+        "season_count": "2",
+        "series_id": "BS",
+        "thumbnail_url": "None"
+    }
+
+
+@pytest.fixture()
 def season_1_episodes_result():
     return {
         "episodes": [
@@ -293,10 +303,22 @@ def test_series_view(setup_database, series_endpoint_result):
         assert response.json_body == series_endpoint_result
 
 
+def test_get_series(setup_database, get_series_result):
+    with Client(app) as client:
+        response = client.http.get('/v1/series/BS')
+        assert response.json_body == get_series_result
+
+
 def test_episode_view(setup_database, season_1_episodes_result):
     with Client(app) as client:
         response = client.http.get('/v1/episode?series-id=1110&season=1')
         assert response.json_body == season_1_episodes_result
+
+
+def test_get_episode(setup_database, get_episode_result):
+    with Client(app) as client:
+        response = client.http.get('/v1/episode/BB1.1')
+        assert response.json_body == get_episode_result
 
 
 def test_trivia_view(setup_database, episode_2_1_trivia_result):
