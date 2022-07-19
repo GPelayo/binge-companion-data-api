@@ -10,15 +10,16 @@ class BingeDatabase:
         engine = create_engine(f"postgresql://{RDB_USER}:{RDB_PASSWORD}@{RDB_HOST}:5432/{RDB_DATABASE_NAME}")
         self.session_maker = sessionmaker(bind=engine)
         self.session = None
-        print('Connecting to Database')
         engine.connect()
 
     def connect(self):
         self.session = self.session_maker()
 
-    def list_series(self):
-        print('Listing Eps')
-        print(self.session.bind)
+    def list_object(self, model, list_name=None, filters=None):
+        list_name = list_name or model.__tablename__
+        filters = [] if filters is None else filters
+        obj_list = self.session.query(model).filter(*filters).all()
+        fields = [columns.name for columns in model.__table__.columns]
 
         return {
             'series': [
