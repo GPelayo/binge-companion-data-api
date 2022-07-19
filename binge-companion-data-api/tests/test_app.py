@@ -1,14 +1,11 @@
 from binge_models.models import Series, Episode, Trivia, TriviaTag
 from chalice.test import Client
-import dotenv
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from app import app
 from chalicelib import config
-
-dotenv.load_dotenv()
 
 test_series = {
             "series": [
