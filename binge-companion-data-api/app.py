@@ -17,7 +17,7 @@ def episodes_view():
 
     if series_id:
         with BingeDatabase() as db:
-            return db.list_episode_names(series_id, season=season)
+            return db.list_episode(series_id, season=season)
     else:
         raise BadRequestError
 
@@ -28,4 +28,4 @@ def trivia_view():
 
     if episode_id:
         with BingeDatabase() as db:
-            return db.list_trivia_text_from_episode(episode_id)
+            return db.list_trivia(episode_id)

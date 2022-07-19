@@ -1,6 +1,6 @@
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from binge_models.models import Series
+from binge_models.models import Series, Episode, Trivia
 
 from chalicelib.config import RDB_USER, RDB_PASSWORD, RDB_HOST, RDB_DATABASE_NAME
 
@@ -22,54 +22,31 @@ class BingeDatabase:
         fields = [columns.name for columns in model.__table__.columns]
 
         return {
-            'series': [
-                {
-                    'id': series.series_id,
-                    'name': series.name,
-                    'season_count': series.season_count
-                } for series in self.session.query(Series).all()
+            list_name: [
+                {field: getattr(obj, field) for field in fields} for obj in obj_list
             ]
         }
+
+    def list_series(self):
+        return self.list_object(Series)
 
     def get_series(self, series_id):
         series = self.session.get(Series, series_id)
 
         return {k: str(v) for k, v in series.__dict__.items() if k[0] != '_'}
 
-    def list_episode_names(self, series_id, season=None):
-        query = f"SELECT episode_id, name FROM episode WHERE episode.series_id = '{series_id}'"
+    def list_episode(self, series_id, season=None):
+        filters = [Episode.series_id == series_id] + [Episode.season == season] if season else []
 
-        if season:
-            query += f" AND episode.season = '{season}'"
-
-        episodes = self.session.execute(text(query)).all()
-
-        return {
-            "episodes": [
-                {
-                    'episode_id': episode_id,
-                    'name': name
-                 } for episode_id, name in episodes
-            ]
-        }
+        return self.list_object(Episode, list_name='episodes', filters=filters)
 
     def get_episode(self, episode_id):
-        name, series_id, season = self.session.execute(text(f"SELECT name, series_id, season FROM episode"
-                                                                f" WHERE episode.episode_id = '{episode_id}'")).one()
+        episode = self.session.get(Episode, episode_id)
 
-        return {
-            'episode_id': episode_id,
-            'name': name,
-            'series_id': series_id,
-            'season': season
-        }
+        return {k: str(v) for k, v in episode.__dict__.items() if k[0] != '_'}
 
-    def list_trivia_text_from_episode(self, episode_id):
-        trivia = self.session.execute(text(f"SELECT text FROM trivia WHERE trivia.episode_id = '{episode_id}'")).all()
-
-        return {
-            "trivia": [i[0] for i in trivia]
-        }
+    def list_trivia(self, episode_id):
+        return self.list_object(Trivia, filters=[Trivia.episode_id == episode_id])
 
     def __enter__(self):
         self.session = self.session_maker()
