@@ -47,10 +47,11 @@ jobs:
           RDB_DATABASE_NAME: postgres
         run: |
           pytest --cov=.
-          coverage lcov --omit="*/usr/lib/*","*/tests/*" -o binge-companion-data-api/coverage.lcov
+          coverage lcov --omit="*/usr/lib/*","*/tests/*"
         working-directory: binge-companion-data-api/
       - name: Publish coverage to coveralls.io
         uses: coverallsapp/github-action@v1.1.2
         with:
           github-token: ${{ github.token }}
           path-to-lcov: binge-companion-data-api/coverage.lcov
+          base-path: binge-companion-data-api/
