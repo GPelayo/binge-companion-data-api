@@ -289,9 +289,7 @@ def setup_database(request):
 
     session = sessionmaker(bind=engine)()
     session.add_all(dummy_series_list)
-    session.commit()
     session.add_all(dummy_episode_list)
-    session.commit()
     session.add_all(dummy_trivia_map.values())
     session.commit()
     session.close()
