@@ -14,10 +14,7 @@ class BingeDatabase:
         self.session = None
         engine.connect()
 
-    def connect(self):
-        self.session = self.session_maker()
-
-    def list_object(self, model, list_name=None, filters=None):
+    def list_object(self, model: Base, list_name: AnyStr = None, filters: List[bool] = None) -> Dict[AnyStr, List]:
         list_name = list_name or model.__tablename__
         filters = [] if filters is None else filters
         obj_list = self.session.query(model).filter(*filters).all()
