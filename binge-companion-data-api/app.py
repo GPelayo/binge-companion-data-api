@@ -42,8 +42,6 @@ def get_episode(episode_id: AnyStr) -> Dict:
 
 @app.route('/v1/trivia')
 def list_trivia() -> Dict:
-    episode_id = app.current_request.query_params.get('episode-id')
-
-    if episode_id:
+    if episode_id := app.current_request.query_params.get('episode-id'):
         with BingeDatabase() as db:
             return db.list_trivia(episode_id)
