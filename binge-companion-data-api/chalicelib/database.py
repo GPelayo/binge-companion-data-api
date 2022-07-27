@@ -1,8 +1,8 @@
-from typing import Any, AnyStr, Dict, List
+from typing import Any, AnyStr, Dict, List, Type
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from binge_models.models import Base, Series, Episode, Trivia
+from binge_models.models import BingeObject, Series, Episode, Trivia
 
 from chalicelib.config import RDB_USER, RDB_PASSWORD, RDB_HOST, RDB_DATABASE_NAME
 
@@ -14,7 +14,7 @@ class BingeDatabase:
         self.session = None
         engine.connect()
 
-    def list_object(self, model: Base, list_name: AnyStr = None, filters: List[bool] = None) -> Dict[AnyStr, List]:
+    def list_object(self, model: Type[BingeObject], list_name: AnyStr = None, filters: List[bool] = None) -> Dict[AnyStr, List]:
         list_name = list_name or model.__tablename__
         filters = [] if filters is None else filters
         obj_list = self.session.query(model).filter(*filters).all()
