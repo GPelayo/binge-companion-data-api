@@ -1,5 +1,5 @@
-chalice==1.27.1
-sqlalchemy==1.4.39
-python-dotenv==0.20.0
-psycopg2-binary==2.9.3
+chalice==1.27.3
+sqlalchemy==1.4.44
+python-dotenv==0.21.0
+psycopg2-binary==2.9.5
 git+https://github.com/GPelayo/binge-companion-models@prod#egg=binge_companion_models
